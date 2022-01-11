@@ -25,5 +25,9 @@ class DtoMessage
 	{
 		$this->type='success';
 	}
+	public function exception()
+	{
+		$this->type='exception';
+	}
 }
 ?>
