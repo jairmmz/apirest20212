@@ -10,7 +10,7 @@ class LanguageController extends Controller
 	public function actionInsert(Request $request)
 	{
 		try {
-			//validator of Laravel.
+			// validator of Laravel.
 			$x = TLanguage::whereRaw("replace(name,' ','')=replace(?,' ','')",[$request->input('name')])->first();
 
 			if ($x != null) {		
