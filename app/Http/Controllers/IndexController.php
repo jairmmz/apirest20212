@@ -1,23 +1,16 @@
 <?php
-    namespace App\Http\Controllers;
-    use App\Models\TLanguaje;
-    use Illuminate\Support\Facades\DB;
+namespace App\Http\Controllers;
 
-class IndexController extends Controller{
-        public function __contruct(){}
-        public function actionIndex(){
+class IndexController extends Controller
+{
+	public function __construct(){}
 
-            // DB::select('select * from t_language');
-           // $listLanguage = TLanguaje::all();
-            $saludo = "Hola mundo";
-            // $people = [
-            //     'firtName' => 'Jairo',
-            //     'surName' => 'Muñoz Miranda',
-            //     'birthDate' => '2021-02-02',
-            //     'listLanguge' => $listLanguage
-            // ];
-
-            return response()->json($saludo);
-        }
-    }
+	public function actionIndex()
+	{
+		return response()->json(
+		[
+			'welcome' => 'Bienvenido al servicio REST'
+		]);
+	}
+}
 ?>

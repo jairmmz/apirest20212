@@ -4,11 +4,17 @@ namespace App\Dto;
 class DtoMessage
 {
 	public $type=null;
-	public $message=null;
+	public $listMessage=null;
 
 	public function __construct()
 	{
 		$this->type='error';
+		$this->listMessage=[];
+	}
+
+	public function exception()
+	{
+		$this->type='exception';
 	}
 
 	public function error()
@@ -25,9 +31,11 @@ class DtoMessage
 	{
 		$this->type='success';
 	}
-	public function exception()
+
+	public function existsMessage()
 	{
-		$this->type='exception';
+		return count($this->listMessage)>0;
 	}
 }
 ?>
+
