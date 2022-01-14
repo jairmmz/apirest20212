@@ -39,5 +39,57 @@ class LanguageValidation
 
 		return $this->globalMessage;
 	}
+
+	public function validationDelete($request)
+	{
+		$validator=Validator::make(
+		[
+			'name' => trim($request->input('name'))
+		],
+		[
+			'name' => ['required']
+		],
+		[
+			'name.required' => 'El campo "Nombre" es requerido.'
+		]);
+
+		if($validator->fails())
+		{
+			$errors=$validator->errors()->all();
+
+			foreach($errors as $value)
+			{
+				$this->globalMessage[]=$value;
+			}
+		}
+
+		return $this->globalMessage;
+	}
+
+	public function validationUpdate($request)
+	{
+		$validator=Validator::make(
+		[
+			'name' => trim($request->input('name'))
+		],
+		[
+			'name' => ['required']
+		],
+		[
+			'name.required' => 'El campo "Nombre" es requerido.'
+		]);
+
+		if($validator->fails())
+		{
+			$errors=$validator->errors()->all();
+
+			foreach($errors as $value)
+			{
+				$this->globalMessage[]=$value;
+			}
+		}
+
+		return $this->globalMessage;
+	}
 }
 ?>
