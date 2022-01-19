@@ -44,17 +44,13 @@ class LanguageController extends Controller
 	public function actionDelete($idLanguage){
 
 		try {
-			//$this->_so->mo->listMessage=(new LanguageValidation())->validationDelete($request);
+			$tLanguage = TLanguage::find($idLanguage);
 
-			if($this->_so->mo->existsMessage())
-			{
-				return response()->json($this->_so);
+			if ($tLanguage != null) {
+				$tLanguage->delete();
 			}
 
-			$tLanguage = TLanguage::find($idLanguage);
-			$tLanguage->delete();
-
-			$this->_so->mo->ListMessage[]='Se eliminó correctamente.';
+			$this->_so->mo->listMessage[]='Registro eliminado correctamente.';
 			$this->_so->mo->success();
 			
 			return response()->json($this->_so);
@@ -68,9 +64,18 @@ class LanguageController extends Controller
 
 	}
 
-	public function actionUpdate(Request $request, $idLanguage)
+	public function actionUpdate(Request $request)
 	{
-		try {
+		try
+		{
+			$tLanguage=TLanguage::find($request->input('idLanguage'));
+
+			if($tLanguage==null)
+			{
+				$this->_so->mo->listMessage[]='El registro que se trata de modificar, no fue encontrado.';
+
+				return response()->json($this->_so);
+			}
 
 			$this->_so->mo->listMessage=(new LanguageValidation())->validationUpdate($request);
 
@@ -79,28 +84,34 @@ class LanguageController extends Controller
 				return response()->json($this->_so);
 			}
 
-			$tLanguage = TLanguage::find($idLanguage);
-
 			$tLanguage->name=trim($request->input('name'));
+
 			$tLanguage->save();
 
-			$this->_so->mo->ListMessage[]='Se modifió correctamente.';
+			$this->_so->mo->listMessage[]='Operación realizada correctamente.';
 			$this->_so->mo->success();
 
 			return response()->json($this->_so);
-
-		} catch (\Throwable $th) {
-			throw $th;
 		}
+		catch(\Exception $e)
+		{
+			throw $e;
+			// $this->_so->mo->listMessage[]='Ocurrió un error inesperado, por favor, contáctese con el administrador del sistema.';
+			// $this->_so->mo->exception();
+			// return response()->json($this->_so);
+		}
+
 	}
 
 	public function actionShowLanguage()
 	{
 		try {
-			
-		$tLanguage = TLanguage::all();
 
-		return response()->json($tLanguage);
+			$listLanguage = TLanguage::all();
+			$this->_so->dto->listLanguage = $listLanguage;
+			$this->_so->mo->success();
+
+			return response()->json($this->_so);
 
 		} catch (\Throwable $th) {
 			$this->_so->mo->listMessage[]='Ocurrió un error inesperado.';
