@@ -19,6 +19,13 @@ class PersonController extends Controller
 		try
 		{
 			DB::beginTransaction();
+		
+			$this->_so->mo->listMessage=(new PersonValidation())->validationInsert($request);
+
+			if($this->_so->mo->existsMessage())
+			{
+				return response()->json($this->_so);
+			}
 
 			/*Programar todo el flujo*/
 			$tPerson = new TPerson();
@@ -30,6 +37,7 @@ class PersonController extends Controller
 			$tPerson->height=trim($request->input('height'));
 
 			$tPerson->save();
+
 
 			$tFavoriteLanguage = new TFavoriteLanguage();
 			$tFavoriteLanguage->idFavoriteLanguage=uniqid();
@@ -68,7 +76,7 @@ class PersonController extends Controller
 				return response()->json($this->_so);
 			}
 
-			// Aqui poner la condicion para el PersonValidation.
+			$this->_so->mo->listMessage=(new PersonValidation())->validationEdit($request);
 
 			if($this->_so->mo->existsMessage())
 			{
@@ -110,14 +118,11 @@ class PersonController extends Controller
 	public function actionDelete(Request $request)
 	{
 		try {
-			DB::beginTransaction();
 			$tPerson = TPerson::find($request->input('idPerson'));
 
 			if ($tPerson != null) {
 				$tPerson->delete();
 			}
-
-			DB::commit();
 
 			$this->_so->mo->listMessage[]='Registro eliminado correctamente.';
 			$this->_so->mo->success();
@@ -125,7 +130,7 @@ class PersonController extends Controller
 			return response()->json($this->_so);
 
 		} catch (\Throwable $th) {
-			DB::rollback();
+
 			$this->_so->mo->listMessage[]='Ocurrió un error inesperado.';
 			$this->_so->mo->exception();
 
@@ -133,28 +138,75 @@ class PersonController extends Controller
 		}
 	}
 
-	public function actionShowPerson()
+	public function actionListPagination($numPagination)
 	{
 		try {
-			DB::beginTransaction();
 
-			$tShowPerson = TPerson::with('surName')->get();
+			$opcPagination = $numPagination*2-2;
+			//$tShowPerson = TPerson::with(['firstName'])->whereRaw('idPerson=?',[$idPerson])->get();
 			//$tShowPerson = TPerson::all();
 
-			DB::commit();
+			//$tShowPerson = TPerson::find($request->input('idPerson'));
 
-			$this->_so->dto->tShowPerson = $tShowPerson;
+			//$tShowPerson = TPerson::whereRaw('idPerson=?',[$request->input('idPerson')])->get();
+			//$listPersonLanguage = TPerson::select('firstName','surName')->skip($opcPagination)->take(2)->get();
+			
+			$listPersonLanguage = TPerson::join('tfavoritelanguage','tperson.idPerson','=','tfavoritelanguage.idPerson')->join('tlanguage','tfavoritelanguage.idLanguage','=','tlanguage.idLanguage')->select('idFavoriteLanguage','tperson.idPerson','firstName','surName','birthDate','gender','name as FavoriteLanguage')->orderBy('tperson.idPerson')->skip($opcPagination)->take(2)->get();
+
+			$this->_so->dto->listPersonLanguage = $listPersonLanguage;
 			$this->_so->mo->success();
 
 			return response()->json($this->_so);
 
 		} catch (\Throwable $th) {
 			throw $th;
-			// DB::rollback();
 			// $this->_so->mo->listMessage[]='Ocurrió un error inesperado.';
 			// $this->_so->mo->exception();
 
 			// return response()->json($this->_so);
+		}
+	}
+
+	public function actionGetPerson(Request $request)
+	{
+		try {
+
+			//$tShowPerson = TPerson::with(['firstName'])->whereRaw('idPerson=?',[$idPerson])->get();
+			//$tShowPerson = TPerson::all();
+
+			//$tShowPerson = TPerson::find($request->input('idPerson'));
+
+			//$tShowPerson = TPerson::whereRaw('idPerson=?',[$request->input('idPerson')])->get();
+			//$tShowPerson = TPerson::select('firstName','surName')->whereRaw('idPerson=?',$request->input('idPerson'))->get();
+
+			$query = TPerson::join('tfavoritelanguage','tperson.idPerson','=','tfavoritelanguage.idPerson')->join('tlanguage','tfavoritelanguage.idLanguage','=','tlanguage.idLanguage')->select('idFavoriteLanguage','tperson.idPerson','firstName','surName','name')->where('tperson.idPerson',$request->input('idPerson'))->get();
+
+			$this->_so->dto->tPersonAndLanguage = $query;
+			$this->_so->mo->success();
+
+			return response()->json($this->_so);
+
+		} catch (\Throwable $th) {
+			throw $th;
+			// $this->_so->mo->listMessage[]='Ocurrió un error inesperado.';
+			// $this->_so->mo->exception();
+
+			// return response()->json($this->_so);
+		}
+	}
+
+	public function actionGet()
+	{
+		try {
+			$listPerson = TPerson::with('tFavoriteLanguage')->pluck('idPerson')->get();
+			
+			$this->_so->dto->$listPerson;
+			$this->_so->mo->success();
+
+			return response()->json($this->_so);
+			
+		} catch (\Throwable $th) {
+			throw $th;
 		}
 	}
 

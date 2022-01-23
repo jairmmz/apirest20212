@@ -12,7 +12,12 @@ $router->post('language/update', ['uses' => 'LanguageController@actionUpdate']);
 $router->post('person/insert',['uses' => 'PersonController@actionInsert']);
 $router->post('person/delete',['uses' => 'PersonController@actionDelete']);
 $router->post('person/edit',['uses' => 'PersonController@actionEdit']);
-$router->get('person/show',['uses' => 'PersonController@actionShowPerson']);
+$router->get('person/list/{numPagination}',['uses' => 'PersonController@actionListPagination']);
+$router->post('person/getPersonLanguage', ['uses' => 'PersonController@actionGetPerson']);
+
+
+// PRUEBA CON WITH
+$router->get('person/getPerson', ['uses' => 'PersonController@actionGet']);
 
 ?>
 
